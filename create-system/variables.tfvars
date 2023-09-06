@@ -6,18 +6,18 @@ stack = "dotnet" #dotnet, dotnetcore, node, python, PHP, java
 operatingSystem = "Windows" #Windows, Linux, WindowsContainer
 db = {
     prod = {
-        sku = "S0"
-        type = "SQLAzure"
-        adminName = "sqladmin"
-        adminPassword = "Password123"
-        connectionString = ""
+        sku = "S0" #Not necessary if connection string field is valued
+        type = "SQLAzure" #Not necessary if connection string field is valued
+        adminName = "sqladmin" #Not necessary if connection string field is valued
+        adminPassword = "Password123" #Not necessary if connection string field is valued
+        connectionString = "" #If this value is empty string the system will create the corresponding SQL Server and SQL Database with related data
     }
     dev = {
-        sku = "Basic"
-        type = "SQLAzure"
-        adminName = "sqladmin"
-        adminPassword = "Password123"
-        connectionString = ""
+        sku = "Basic" #Not necessary if connection string field is valued
+        type = "SQLAzure" #Not necessary if connection string field is valued
+        adminName = "sqladmin" #Not necessary if connection string field is valued
+        adminPassword = "Password123" #Not necessary if connection string field is valued
+        connectionString = "" #If this value is empty string the system will create the corresponding SQL Server and SQL Database with related data
     }
 }
 sku = {

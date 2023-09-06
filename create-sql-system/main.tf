@@ -17,18 +17,14 @@ variable "allowIps" {
 variable "db" {
   type = object({
     prod = object({
-      type = string
       sku = string
       adminName = string
       adminPassword = string
-      connectionString = string
     })
     dev = object({
-      type = string
       sku = string
       adminName = string
       adminPassword = string
-      connectionString = string
     })
   })
 }
