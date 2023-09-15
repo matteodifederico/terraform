@@ -44,3 +44,17 @@ variable "sku" {
     dev = "B1"
   }
 }
+variable "storage" {
+  type = object({
+    prod = object({
+      tier = string
+      replication = string
+      kind = string
+    })
+    dev = object({
+      tier = string
+      replication = string
+      kind = string
+    })
+  })
+}

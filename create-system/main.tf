@@ -16,7 +16,7 @@ provider "azurerm" {
 
 #region Resource group
 resource "azurerm_resource_group" "rg-prod" {
-  name     = "rg-${var.name}-prod"
+  name     = "rg-${var.name}-prod-${var.region}"
   location = var.region
 
   tags = {
@@ -27,11 +27,42 @@ resource "azurerm_resource_group" "rg-prod" {
 }
 
 resource "azurerm_resource_group" "rg-dev" {
-  name     = "rg-${var.name}-dev"
+  name     = "rg-${var.name}-dev-${var.region}"
   location = var.region
 
   tags = {
     environment = "dev"
+    businessimpact = var.businessImpact
+    workload = var.name
+  }
+}
+#endregion
+
+#region Storage Account
+resource "azurerm_storage_account" "storage-dev" {
+  name = "storage-${var.name}-dev-${var.region}"
+  resource_group_name = azurerm_resource_group.rg-dev.name
+  location = azurerm_resource_group.rg-dev.location
+  account_tier = var.storage.dev.tier
+  account_replication_type = var.storage.dev.replication
+  account_kind = var.storage.dev.kind
+
+  tags = {
+    environment = "dev"
+    businessimpact = var.businessImpact
+    workload = var.name
+  }
+}
+resource "azurerm_storage_account" "storage-prod" {
+  name = "storage-${var.name}-prod-${var.region}"
+  resource_group_name = azurerm_resource_group.rg-prod.name
+  location = azurerm_resource_group.rg-prod.location
+  account_tier = var.storage.prod.tier
+  account_replication_type = var.storage.prod.replication
+  account_kind = var.storage.prod.kind
+
+  tags = {
+    environment = "prod"
     businessimpact = var.businessImpact
     workload = var.name
   }
@@ -167,6 +198,7 @@ resource "azurerm_windows_web_app" "webapp-prod" {
   }
 
   app_settings = {
+    STORAGEACCOUNT_CONNECTIONSTRING = azurerm_storage_account.storage-prod.primary_connection_string
     APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.app-insights-prod.instrumentation_key
   }
 
@@ -198,6 +230,7 @@ resource "azurerm_windows_web_app" "webapp-dev" {
   }
 
   app_settings = {
+    STORAGEACCOUNT_CONNECTIONSTRING = azurerm_storage_account.storage-dev.primary_connection_string
     APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.app-insights-dev.instrumentation_key
   }
 
@@ -223,5 +256,29 @@ resource "azurerm_mssql_firewall_rule" "db-firewall-rule-dev" {
   server_id = azurerm_mssql_server.sql-server-dev[*].id
   start_ip_address = each.key
   end_ip_address = each.key
+}
+#endregion
+
+#region Deloyment slots
+resource "azurerm_windows_web_app_slot" "slot-prod" {
+  name = "staging"
+  app_service_id = azurerm_windows_web_app.webapp-prod.id
+  
+  site_config {
+    application_stack {
+      current_stack  = try(var.stack, "dotnet")
+      dotnet_version = try(var.dotnetVersion, "v6.0")
+    }
+  }
+
+  app_settings = {
+    APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.app-insights-prod.instrumentation_key
+  }
+
+  tags = {
+    environment = "prod"
+    businessimpact = var.businessImpact
+    workload = var.name
+  }
 }
 #endregion
