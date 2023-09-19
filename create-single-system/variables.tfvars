@@ -13,3 +13,8 @@ db = {
     adminPassword = "Password123" #Not necessary if connection string field is valued
     connectionString = "" #If this value is empty string the system will create the corresponding SQL Server and SQL Database with related data
 }
+storage = {
+    tier: "Standard" #Standard or Premium
+    replication: "RAGZRS" #LRS, GRS, RAGRS, ZRS, GZRS, RAGZRS
+    kind: "StorageV2" #Storage, StorageV2, BlobStorage
+}

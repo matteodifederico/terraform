@@ -27,6 +27,23 @@ resource "azurerm_resource_group" "rg" {
 }
 #endregion
 
+#region Storage Account
+resource "azurerm_storage_account" "storage" {
+  name = "storage-${var.name}-${var.environment}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location = azurerm_resource_group.rg.location
+  account_tier = var.storage.tier
+  account_replication_type = var.storage.replication
+  account_kind = var.storage.kind
+
+  tags = {
+    environment = "${var.environment}"
+    businessimpact = var.businessImpact
+    workload = var.name
+  }
+}
+#endregion
+
 #region Server farms (app service plans)
 resource "azurerm_service_plan" "plan" {
   name = "plan-${var.name}-${var.environment}"
@@ -68,6 +85,7 @@ resource "azurerm_windows_web_app" "webapp" {
   }
 
   app_settings = {
+    STORAGEACCOUNT_CONNECTIONSTRING = azurerm_storage_account.storage.primary_connection_string
     APPINSIGHTS_INSTRUMENTATIONKEY = azurerm_application_insights.app-insights.instrumentation_key
   }
 

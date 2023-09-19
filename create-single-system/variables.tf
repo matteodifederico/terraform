@@ -33,3 +33,11 @@ variable "db" {
     connectionString = string
   })
 }
+variable "storage" {
+  type = object({
+    tier = string
+    replication = string
+    kind = string
+  })
+}
+  

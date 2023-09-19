@@ -4,6 +4,9 @@ variable "name" {
 variable "region" {
   type = string
 }
+variable "failoverRegion" {
+  type = string
+}
 variable "businessImpact" {
   type = string
 }
@@ -18,9 +21,19 @@ variable "stack" {
 }
 variable "sku" {
   type = string
+  default = "B1"
 }
 variable "environment" {
   type = string
+  default = "prod"
+}
+variable "db" {
+  type = object({
+    type = string
+    sku = string
+    adminName = string
+    adminPassword = string
+  })
 }
 variable "storage" {
   type = object({
