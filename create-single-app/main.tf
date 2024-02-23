@@ -16,7 +16,7 @@ provider "azurerm" {
 
 #region Resource group
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-${var.name}-${var.environment}"
+  name     = "rg-${var.name}-${var.environment}-${var.region}"
   location = var.region
 
   tags = {
@@ -29,7 +29,7 @@ resource "azurerm_resource_group" "rg" {
 
 #region Storage Account
 resource "azurerm_storage_account" "storage" {
-  name = "storage-${var.name}-${var.environment}"
+  name = "storage${var.name}${var.environment}"
   resource_group_name = azurerm_resource_group.rg.name
   location = azurerm_resource_group.rg.location
   account_tier = var.storage.tier
@@ -46,7 +46,7 @@ resource "azurerm_storage_account" "storage" {
 
 #region Server farms (app service plans)
 resource "azurerm_service_plan" "plan" {
-  name = "plan-${var.name}-${var.environment}"
+  name = "plan-${var.name}-${var.environment}-${var.region}"
   resource_group_name = azurerm_resource_group.rg.name
   location = azurerm_resource_group.rg.location
   os_type = var.operatingSystem
@@ -79,8 +79,8 @@ resource "azurerm_windows_web_app" "webapp" {
 
   site_config {
     application_stack {
-      current_stack  = try(var.stack, "dotnet")
-      dotnet_version = try(var.dotnetVersion, "v6.0")
+      current_stack  = "${var.stack}"
+      dotnet_version = "${var.dotnetVersion}"
     }
   }
 
@@ -104,8 +104,8 @@ resource "azurerm_windows_web_app_slot" "slot" {
   
   site_config {
     application_stack {
-      current_stack  = try(var.stack, "dotnet")
-      dotnet_version = try(var.dotnetVersion, "v6.0")
+      current_stack  = "${var.stack}"
+      dotnet_version = "${var.dotnetVersion}"
     }
   }
 
